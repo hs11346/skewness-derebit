@@ -9,7 +9,7 @@ import time
 import scipy.interpolate as interpolate
 from scipy.stats import norm
 import streamlit as st
-
+from matplotlib.backends.backend_agg import FigureCanvasAgg
 
 start = time.time()
 async def call_api(msg):
@@ -69,7 +69,7 @@ def calculate_delta_from_derebit(contract):
                          contract.mark_iv / 100)
 def plotting(final, calls_spline, graph1, graph2, calls):
     fig, ax1 = plt.subplots()
-
+    FigureCanvasAgg(fig)
     # Plot the first line using the primary y-axis
     ax1.plot(final.time, final['1 week skewness'], 'g-', label='Skewness')
     ax1.set_xlabel('time')
@@ -92,6 +92,7 @@ def plotting(final, calls_spline, graph1, graph2, calls):
     size = (10, 24)
     plt.rcParams.update({'font.size': 8})
     fig2 = plt.figure(figsize=size)
+    FigureCanvasAgg(fig2)
     i = 1
     plt.tight_layout()
     for expiry in calls.sort_values(by='ttm').expiry.unique():
