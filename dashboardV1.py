@@ -182,5 +182,6 @@ def main():
             plt.legend()
             i = i + 1
         graph2.pyplot(fig2)
+        time.sleep(15)
 if __name__ == '__main__':
     main()
