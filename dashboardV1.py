@@ -143,7 +143,7 @@ def main():
                                                  "BTC price" : df.underlying_price.iloc[0]
                                                  }])],
                   axis = 0, ignore_index = True)
-
+        final = final.tail(30)
         fig, ax1 = plt.subplots()
 
         # Plot the first line using the primary y-axis
