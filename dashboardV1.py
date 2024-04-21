@@ -67,6 +67,46 @@ def calculate_delta_from_derebit(contract):
     elif contract.cp == 'P':
         return put_delta(contract.underlying_price, contract.strike, contract.interest_rate, contract.ttm,
                          contract.mark_iv / 100)
+def plotting(final, calls_spline):
+    fig, ax1 = plt.subplots()
+
+    # Plot the first line using the primary y-axis
+    ax1.plot(final.time, final['1 week skewness'], 'g-', label='Skewness')
+    ax1.set_xlabel('time')
+    ax1.set_ylabel('Skewness', color='g')
+
+    # Create a secondary y-axis
+    ax2 = ax1.twinx()
+
+    # Plot the second line using the secondary y-axis
+    ax2.plot(final.time, final['BTC price'], 'b-', label='BTC price')
+    ax2.set_ylabel('BTC price', color='b')
+
+    # Add a legend
+    lines = [ax1.get_lines()[0], ax2.get_lines()[0]]
+    labels = [line.get_label() for line in lines]
+    plt.legend(lines, labels)
+
+    graph1.pyplot(fig)
+    calls['fitted_iv'] = calls.apply(lambda row: calls_spline.ev(row.cal_delta, row.ttm).item(), axis=1)
+    size = (10, 24)
+    plt.rcParams.update({'font.size': 8})
+    fig2 = plt.figure(figsize=size)
+    i = 1
+    plt.tight_layout()
+    for expiry in calls.sort_values(by='ttm').expiry.unique():
+        plt.subplot(5, 2, i)
+        tmp = calls[calls.expiry == expiry]
+        plt.title("IV smile against delta at " + expiry)
+        plt.scatter(tmp.cal_delta, tmp.mark_iv, label='actual')
+        plt.plot(tmp.sort_values(by='cal_delta').cal_delta, tmp.sort_values(by='cal_delta').fitted_iv,
+                 label='fitted', color='orange')
+        plt.axvline(0.25)
+        plt.axvline(0.75)
+        plt.legend()
+        i = i + 1
+    graph2.pyplot(fig2)
+    time.sleep(15)
 
 def main():
     msg = \
@@ -144,44 +184,6 @@ def main():
                                                  }])],
                   axis = 0, ignore_index = True)
         final = final.tail(30)
-        fig, ax1 = plt.subplots()
-
-        # Plot the first line using the primary y-axis
-        ax1.plot(final.time, final['1 week skewness'], 'g-', label='Skewness')
-        ax1.set_xlabel('time')
-        ax1.set_ylabel('Skewness', color='g')
-
-        # Create a secondary y-axis
-        ax2 = ax1.twinx()
-
-        # Plot the second line using the secondary y-axis
-        ax2.plot(final.time, final['BTC price'], 'b-', label='BTC price')
-        ax2.set_ylabel('BTC price', color='b')
-
-        # Add a legend
-        lines = [ax1.get_lines()[0], ax2.get_lines()[0]]
-        labels = [line.get_label() for line in lines]
-        plt.legend(lines, labels)
-
-        graph1.pyplot(fig)
-        calls['fitted_iv'] = calls.apply(lambda row: calls_spline.ev(row.cal_delta, row.ttm).item(), axis=1)
-        size = (10, 24)
-        plt.rcParams.update({'font.size': 8})
-        fig2 = plt.figure(figsize=size)
-        i = 1
-        plt.tight_layout()
-        for expiry in calls.sort_values(by='ttm').expiry.unique():
-            plt.subplot(5, 2, i)
-            tmp = calls[calls.expiry == expiry]
-            plt.title("IV smile against delta at " + expiry)
-            plt.scatter(tmp.cal_delta, tmp.mark_iv, label='actual')
-            plt.plot(tmp.sort_values(by='cal_delta').cal_delta, tmp.sort_values(by='cal_delta').fitted_iv,
-                     label='fitted', color='orange')
-            plt.axvline(0.25)
-            plt.axvline(0.75)
-            plt.legend()
-            i = i + 1
-        graph2.pyplot(fig2)
-        time.sleep(15)
+        plotting(final, calls_spline)
 if __name__ == '__main__':
     main()
