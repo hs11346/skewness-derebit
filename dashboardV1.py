@@ -106,7 +106,7 @@ def plotting(final, calls_spline, graph1, graph2, calls):
         plt.legend()
         i = i + 1
     graph2.pyplot(fig2)
-    time.sleep(15)
+    time.sleep(5)
 
 def main():
     msg = \
