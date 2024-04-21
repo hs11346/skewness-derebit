@@ -67,7 +67,7 @@ def calculate_delta_from_derebit(contract):
     elif contract.cp == 'P':
         return put_delta(contract.underlying_price, contract.strike, contract.interest_rate, contract.ttm,
                          contract.mark_iv / 100)
-def plotting(final, calls_spline, graph1, graph2):
+def plotting(final, calls_spline, graph1, graph2, calls):
     fig, ax1 = plt.subplots()
 
     # Plot the first line using the primary y-axis
@@ -184,6 +184,6 @@ def main():
                                                  }])],
                   axis = 0, ignore_index = True)
         final = final.tail(30)
-        plotting(final, calls_spline, graph1, graph2)
+        plotting(final, calls_spline, graph1, graph2, calls)
 if __name__ == '__main__':
     main()
