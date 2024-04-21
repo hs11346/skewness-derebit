@@ -184,6 +184,6 @@ def main():
                                                  }])],
                   axis = 0, ignore_index = True)
         final = final.tail(30)
-        plotting(final, calls_spline)
+        plotting(final, calls_spline, graph1, graph2)
 if __name__ == '__main__':
     main()
